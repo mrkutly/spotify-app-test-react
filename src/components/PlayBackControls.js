@@ -7,31 +7,35 @@ export default class PlayBackControls extends Component {
   }
 
   componentDidMount() {
-    fetch('https://api.spotify.com/v1/me/player', {
-      method: 'GET',
-      headers: this.headers()
-    })
-    .then(r => {
-      if (r.status === 204) {
-        return '204'
-      } else {
-        return r.json()
-      }
-    })
-    .then(json => {
-      if (json === '204'){
-        return
-      } else {
-        if (json.context === null) {
-          this.setState({ shuffle: json.shuffle_state })
+    this.refreshPlayerStatus = setInterval(() => {
+      fetch('https://api.spotify.com/v1/me/player', {
+        method: 'GET',
+        headers: this.headers()
+      })
+      .then(r => {
+        return (r.status === 204 ? '204' : r.json())
+      })
+      .then(json => {
+        if (json === '204'){
+          return
         } else {
-          this.setState({ shuffle: json.shuffle_state })
-          let listArray = json.context.href.split('/')
-          let listId = listArray[listArray.length - 1]
-          this.props.setPlayList(listId)
+          if (json.context === null) {
+            this.setState({ shuffle: json.shuffle_state })
+            this.props.setPlayList(null)
+          } else {
+            let listArray = json.context.href.split('/')
+            let listId = listArray[listArray.length - 1]
+
+            this.setState({ shuffle: json.shuffle_state })
+            this.props.setPlayList(listId)
+          }
         }
-      }
-    })
+      })
+    }, 5000)
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.refreshPlayerStatus)
   }
 
   headers = () => {

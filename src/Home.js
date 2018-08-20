@@ -90,11 +90,11 @@ export default class Home extends Component {
 
     return (
       <div>
-        <SearchBar search={this.search} />
         { devices.length === 0 ? <div> Open Spotify on one of our devices to get started <br /> <button onClick={this.refreshDevices}>Refresh device list</button></div> : null }
         { !deviceId ? <DeviceList devices={devices} accessToken={accessToken} setDeviceId={this.setDeviceId} /> : null }
         { currentTrack ? <NowPlaying track={currentTrack}/> : null}
         { deviceId ? <PlayBackControls accessToken={accessToken} setPlayList={this.setPlayList} /> : null }
+        <SearchBar search={this.search} />
         { searchResults.length !== 0 ? <ResultCardsContainer searchResults={searchResults} accessToken={accessToken} playList={playList} /> : null }
       </div>
     )

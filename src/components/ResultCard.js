@@ -14,18 +14,22 @@ export default class ResultCard extends Component {
     }).then(r => r.json())
     .then(j => {
       let uris = j.tracks.items.map(track => track.uri)
-
-      fetch(`https://api.spotify.com/v1/playlists/${playList}/tracks`, {
-        method: 'POST',
-        mode: 'cors',
-        headers: {
-          'Authorization': `Bearer ${accessToken}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          "uris": uris
+      let headers = { 'Authorization': `Bearer ${accessToken}`, 'Content-Type': 'application/json' }
+      if (playList){
+        fetch(`https://api.spotify.com/v1/playlists/${playList}/tracks`, {
+          method: 'POST',
+          mode: 'cors',
+          headers: headers,
+          body: JSON.stringify({
+            "uris": uris
+          })
         })
-      })
+      } else {
+        fetch(`https://api.spotify.com/v1/me/albums?ids=${j.id}`, {
+          method: 'PUT',
+          headers: headers
+        })
+      }
     })
 
   }
